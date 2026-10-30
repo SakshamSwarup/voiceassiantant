@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Verify Voice AI backend on port 8001",
+			"type": "shell",
+			"command": "& '${workspaceFolder}\\backend\\.venv\\Scripts\\python.exe' -m uvicorn app.main:app --app-dir '${workspaceFolder}\\backend' --reload --reload-dir '${workspaceFolder}\\backend\\app' --port 8001",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Build Voice AI frontend",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"--prefix",
+				"${workspaceFolder}\\frontend",
+				"run",
+				"build"
+			],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}
