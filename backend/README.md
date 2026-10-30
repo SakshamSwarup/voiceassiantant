@@ -46,6 +46,12 @@ values have not been changed. Never send the permanent key to the browser.
 | `OPENAI_TIMEOUT_SECONDS` | `30` |
 | `FRONTEND_ORIGIN` | `http://localhost:5173` |
 
+CORS allows `https://voiceaiassiantant.vercel.app`, `http://localhost:5173`,
+and `http://127.0.0.1:5173`, plus the configured `FRONTEND_ORIGIN`.
+The single middleware on `app.main:app` permits GET, POST, OPTIONS, and the
+Content-Type header, with credentials disabled. Redeploy the backend after
+changing this configuration.
+
 Both models must be enabled in your OpenAI API project. The delegation guide
 currently recommends `gpt-6-luna`; the WebRTC quickstart also demonstrates
 `gpt-5.6-terra`. Project access has not been verified by an API call. Set

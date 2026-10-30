@@ -70,9 +70,17 @@ Start the backend from `backend`:
 Start `npm run dev` from `frontend` and open **http://localhost:5173**.
 The backend permits that exact origin by default. Check
 http://127.0.0.1:8000/health and confirm the voice route appears in `/docs`.
-Optionally set `VITE_API_BASE_URL` to a different backend base URL in a local
-Vite environment file and restart Vite; never put API keys in Vite variables.
+API URLs are centralized in `src/lib/api.ts` (`API_URLS.health` and
+`API_URLS.voiceSession`). No automatic health request is made by the current UI.
+Development defaults to `http://127.0.0.1:8000`; production builds default to
+`https://voice-ai-backend-xu50.onrender.com`.
+Set `VITE_API_BASE_URL` in a Vite environment file or the frontend build
+environment to override either default. Blank values use the mode's default;
+trailing slashes are removed. Restart Vite after changing development settings,
+or rebuild/redeploy for production changes: Vite embeds these values at build
+time. Never put API keys in Vite variables.
 For another frontend origin, configure the backend's `FRONTEND_ORIGIN`.
+The deployed backend must allow the deployed frontend's exact origin via CORS.
 
 Starting a real session transmits microphone audio to OpenAI and can incur
 charges. The backend must have an API key and access to its configured models.

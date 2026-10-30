@@ -39,8 +39,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=[configuration.frontend_origin],
-        allow_methods=["GET", "POST"],
+        allow_origins=[
+            "https://voiceaiassiantant.vercel.app",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            configuration.frontend_origin,
+        ],
+        allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Content-Type"],
         allow_credentials=False,
     )

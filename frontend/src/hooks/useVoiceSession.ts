@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useMicrophone } from "./useMicrophone";
 import { useVoiceActivity } from "./useVoiceActivity";
 import { createIdleDeadline, createVoiceUsage, isRecord, voiceCostOptions } from "../lib/voiceUsage";
+import { API_URLS } from "../lib/api";
 
 type SessionStatus = "idle" | "requestingPermission" | "connecting" | "connected" | "disconnecting" | "error";
 type SessionState = { status: SessionStatus; error: string | null; sessionId: string | null };
 type Connection = { stop: () => void; continueCall: () => void };
-const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
 
 function waitForIce(peer: RTCPeerConnection, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -311,7 +311,7 @@ export function useVoiceSession() {
         if (disposed || stopping) return;
         const sdp = pc.localDescription?.sdp;
         if (!sdp) throw new Error("The browser could not create an audio offer. Please retry.");
-        const response = await fetch(`${BACKEND_URL}/api/v1/voice/session`, {
+        const response = await fetch(API_URLS.voiceSession, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sdp }),
@@ -319,7 +319,7 @@ export function useVoiceSession() {
         });
         if (!response.ok) {
           const messages: Record<number, string> = {
-            404: "Voice endpoint not found. Start the backend with app.main:app on port 8000.",
+            404: "Voice endpoint not found. Check the configured backend URL and its app.main:app deployment.",
             422: "The backend rejected the browser audio offer. Check frontend/backend compatibility.",
             502: "The backend could not establish the upstream voice session. Check backend logs.",
             503: "Voice service is unavailable. Check the backend API key, personal-story file, model access, or capacity.",
@@ -343,7 +343,7 @@ export function useVoiceSession() {
       } catch (error: unknown) {
         if (disposed || stopping) return;
         fail(error instanceof TypeError
-          ? "Cannot connect to the voice backend. Check port 8000, CORS, and your network."
+          ? "Cannot connect to the voice backend. Check the configured backend URL, CORS, and your network."
           : error instanceof Error ? error.message : "Voice connection failed. Please retry.");
       }
     };

@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -22,17 +23,30 @@ def test_docs_and_registered_routes(client: TestClient) -> None:
     assert operation["requestBody"]["required"] is True
 
 
-def test_frontend_cors(client: TestClient) -> None:
+@pytest.mark.parametrize(
+    "origin",
+    [
+        "https://voiceaiassiantant.vercel.app",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+)
+def test_frontend_cors(client: TestClient, origin: str) -> None:
     response = client.options(
         "/api/v1/voice/session",
         headers={
-            "Origin": "http://localhost:5173",
+            "Origin": origin,
             "Access-Control-Request-Method": "POST",
             "Access-Control-Request-Headers": "content-type",
         },
     )
     assert response.status_code == 200
-    assert response.headers["access-control-allow-origin"] == "http://localhost:5173"
+    assert response.headers["access-control-allow-origin"] == origin
+    assert {"POST", "OPTIONS"} <= set(
+        response.headers["access-control-allow-methods"].split(", ")
+    )
+    assert "content-type" in response.headers["access-control-allow-headers"].lower()
+    assert "access-control-allow-credentials" not in response.headers
 
 
 def test_unlisted_origin_is_not_allowed(client: TestClient) -> None:
